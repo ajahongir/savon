@@ -131,6 +131,12 @@ module Savon
       end
     end
 
+    def action_namespaces
+      @action_namespaces ||= begin
+        @globals[:action_namespaces] || {}
+      end
+    end
+
     def env_namespace
       @env_namespace ||= @globals[:env_namespace] || :env
     end
@@ -141,6 +147,7 @@ module Savon
 
     def namespaced_message_tag
       tag_name = message_tag
+      return [tag_name, action_namespaces] if action_namespaces.present?
       return [tag_name] if @wsdl.document? and @wsdl.soap_input(@operation_name.to_sym).is_a?(Hash)
       if namespace_identifier == nil
         [tag_name, message_attributes]
